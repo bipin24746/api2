@@ -48,8 +48,8 @@ class _HomePageState extends State<HomePage> {
                           'Address: ${userDetails[index].address.street}, '
                           '${userDetails[index].address.suite}, '
                           '${userDetails[index].address.city}, '
-                          '${userDetails[index].address.zipcode}, '
-                          'Geo: ${userDetails[index].address.geo.lat}, '
+                          '${userDetails[index].address.zipcode},'
+                          '${userDetails[index].address.geo.lat}, '
                           '${userDetails[index].address.geo.lng}',
                         ),
                       ],
