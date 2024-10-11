@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:api2/model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,40 +12,47 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<UserDetails> userDetails = [];
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<List<UserDetails>>(
       future: getData(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          userDetails = snapshot.data!;
           return ListView.builder(
             itemCount: userDetails.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black12,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Id: ${userDetails[index].id}'),
-                            Text('Name: ${userDetails[index].name.toString()}'),
-                            Text('UserName: ${userDetails[index].username}'),
-                            Text('Email: ${userDetails[index].email}'),
-                            Text('Phone: ${userDetails[index].phone}'),
-                            Text('WebSite: ${userDetails[index].website}'),
-                            Text(
-                                'Company Name: ${userDetails[index].company.name.toString()}'),
-                            Text(
-                                'Address: ${userDetails[index].address.street}, ${userDetails[index].address.suite},${userDetails[index].address.city},${userDetails[index].address.zipcode},${userDetails[index].address.geo.lat},${userDetails[index].address.geo.lng},'),
-                          ]),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Id: ${userDetails[index].id}'),
+                        Text('Name: ${userDetails[index].name}'),
+                        Text('UserName: ${userDetails[index].username}'),
+                        Text('Email: ${userDetails[index].email}'),
+                        Text('Phone: ${userDetails[index].phone}'),
+                        Text('Website: ${userDetails[index].website}'),
+                        Text(
+                            'Company Name: ${userDetails[index].company.name}'),
+                        Text(
+                          'Address: ${userDetails[index].address.street}, '
+                          '${userDetails[index].address.suite}, '
+                          '${userDetails[index].address.city}, '
+                          '${userDetails[index].address.zipcode}, '
+                          'Geo: ${userDetails[index].address.geo.lat}, '
+                          '${userDetails[index].address.geo.lng}',
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -54,9 +60,7 @@ class _HomePageState extends State<HomePage> {
             },
           );
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
@@ -65,16 +69,12 @@ class _HomePageState extends State<HomePage> {
   Future<List<UserDetails>> getData() async {
     final response =
         await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
-    var data = jsonDecode(response.body.toString());
 
     if (response.statusCode == 200) {
-      for (Map<String, dynamic> index in data) {
-        userDetails.add(UserDetails.fromJson(index));
-      }
-
-      return userDetails;
+      List data = jsonDecode(response.body) as List;
+      return data.map((json) => UserDetails.fromJson(json)).toList();
     } else {
-      return userDetails;
+      throw Exception('Failed to load data');
     }
   }
 }
